@@ -1,6 +1,5 @@
-cmake_minimum_required(VERSION 3.19)
+set(day "4")
+set(part "2")
+include(${CMAKE_SOURCE_DIR}/year2021/year.cmake)
 
-set(CMAKE_CXX_STANDARD 20)
-
-configure_file(../../input_data.txt ${CMAKE_BINARY_DIR}/day4/part2/cpp/input_data.txt)
-add_executable(day4_part2 main.cpp BingoBoard.cpp)
+add_executable(${target} main.cpp BingoBoard.cpp)

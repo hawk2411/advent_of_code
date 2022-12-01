@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.19)
+set(day "3")
+set(part "2")
+include(${CMAKE_SOURCE_DIR}/year2021/year.cmake)
 
-set(CMAKE_CXX_STANDARD 20)
+add_executable(${target} main.cpp)
 
-configure_file(../../input_data.txt ${CMAKE_BINARY_DIR}/day3/part2/cpp/input_data.txt)
-add_executable(day3_part2 main.cpp)

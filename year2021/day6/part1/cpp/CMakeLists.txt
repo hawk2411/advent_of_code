@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 3.19)
+set(day "6")
+set(part "1")
+include(${CMAKE_SOURCE_DIR}/year2021/year.cmake)
 
-set(CMAKE_CXX_STANDARD 20)
+add_executable(${target} main.cpp input_parser.cpp input_parser.h fish_simulator.cpp fish_simulator.h)
 
-configure_file(../../input_data.txt ${CMAKE_BINARY_DIR}/day6/part1/cpp/input_data.txt)
-add_executable(day6_part1 main.cpp input_parser.cpp input_parser.h fish_simulator.cpp fish_simulator.h)
 find_package(Threads REQUIRED)
 if (Threads_FOUND)
-    target_link_libraries (day6_part1 ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries (${target} ${CMAKE_THREAD_LIBS_INIT})
 endif (Threads_FOUND)
-#target_link_libraries( pthread)
