@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.19)
+project(advent_of_code)
+
+set(CMAKE_CXX_STANDARD 20)
+
+add_library(global_lib INTERFACE)
+target_include_directories(global_lib INTERFACE global_inc)
+
+add_subdirectory(year2021/day1/part1/cpp)
+add_subdirectory(year2021/day1/part2/cpp)
+add_subdirectory(year2021/day2/part1/cpp)
+add_subdirectory(year2021/day2/part2/cpp)
+add_subdirectory(year2021/day3/part1/cpp)
+add_subdirectory(year2021/day3/part2/cpp)
+add_subdirectory(year2021/day4/part1/cpp)
+add_subdirectory(year2021/day4/part2/cpp)
+add_subdirectory(year2021/day5/part1/cpp)
+add_subdirectory(year2021/day5/part2/cpp)
+add_subdirectory(year2021/day6/part1/cpp)
+add_subdirectory(year2021/day7/part1/cpp)
+add_subdirectory(year2021/day7/part2/cpp)
+add_subdirectory(year2021/day8/part1/cpp)
+add_subdirectory(year2021/day8/part2/cpp)
