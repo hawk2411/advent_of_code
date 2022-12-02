@@ -49,3 +49,4 @@ add_subdirectory(year2021/day9/part1/cpp)
 add_subdirectory(year2021/day9/part2/cpp)
 
 add_subdirectory(year2022/day1/part1/cpp)
+add_subdirectory(year2022/day1/part2/cpp)

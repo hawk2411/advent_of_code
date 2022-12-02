@@ -1,21 +1,15 @@
 //
 // Created by hawk on 18.06.22.
 //
-#include <iostream>
-#include <algorithm>
+#include <trim_functions.h>
 
 #include "input_parser.h"
 
-using namespace day9;
+namespace year2022_day1 {
 
-std::vector<int> input_parser::get_numbers(const std::string &line) {
-    constexpr unsigned char ascii_zero = 48;
-    std::vector<int> result;
-
-    std::transform(line.cbegin(), line.cend(), std::back_inserter(result),
-                   [&ascii_zero](const auto& character){
-        return character - ascii_zero;
-    });
-
-    return result;
+    unsigned int get_number(const std::string &string_number) {
+        char *error_break;;
+        auto result = std::strtol(string_number.c_str(), &error_break, 10);
+        return result;
+    }
 }

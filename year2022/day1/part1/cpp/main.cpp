@@ -32,6 +32,16 @@ int main() {
     }
     input_data.close();
 
+    if(sum > 0) {
+        sums.insert(sum);
+    }
+    auto last = sums.rbegin();
+    sum = 0;
+    for(int i = 0; i < 3; i++ ) {
+        sum += *last;
+        last++;
+    }
+
     std::cout << "Solution: " << *sums.rbegin() << std::endl;
     return 0;
 }

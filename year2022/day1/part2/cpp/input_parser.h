@@ -11,12 +11,9 @@
 #include <vector>
 #include <optional>
 
-namespace day9 {
-    class input_parser {
+namespace year2022_day1 {
 
-    public:
-        static std::vector<int> get_numbers(const std::string &character);
-    };
+    unsigned int get_number(const std::string &string_number);
 }
 
 #endif //ADVENT_OF_CODE_INPUT_PARSER_H
