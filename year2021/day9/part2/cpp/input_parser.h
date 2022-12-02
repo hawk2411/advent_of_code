@@ -11,11 +11,12 @@
 #include <vector>
 #include <optional>
 
-class input_parser {
+namespace day9 {
+    class input_parser {
 
-public:
-    static unsigned int get_number(const std::string &line);
-};
-
+    public:
+        static std::vector<int> get_numbers(const std::string &line);
+    };
+}
 
 #endif //ADVENT_OF_CODE_INPUT_PARSER_H

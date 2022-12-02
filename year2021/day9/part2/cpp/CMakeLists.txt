@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.19)
+set(day "9")
+set(part "2")
+include(${CMAKE_SOURCE_DIR}/year2021/year.cmake)
 
-set(CMAKE_CXX_STANDARD 20)
-
-
-configure_file(../../input_data.txt ${CMAKE_BINARY_DIR}/day8/part2/cpp/input_data.txt)
-add_executable(day8_part2 main.cpp input_parser.cpp input_parser.h unique_sequences.cpp unique_sequences.h)
-
-target_link_libraries(day8_part2 global_lib)
+add_executable(${target} main.cpp input_parser.cpp input_parser.h)
+target_link_libraries(${target}
+        PUBLIC
+        global_lib)
+target_include_directories(${target} PUBLIC ${CMAKE_SOURCE_DIR}/global_inc)
