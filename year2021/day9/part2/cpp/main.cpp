@@ -4,10 +4,67 @@
 #include <vector>
 #include <cmath>
 #include <memory>
-#include <map>
+#include <set>
+#include <array>
 #include "input_parser.h"
 
+using coord_t = std::pair<int , int>;
+using basin_t = std::vector<coord_t>;
 
+
+void fillBasin(const coord_t &current_pos, std::set<coord_t> &checked_coords,
+               const std::vector<std::vector<int>> &height_map, basin_t &basin)
+{
+    if(current_pos.first < 0) {
+        return;
+    }
+    if(current_pos.first >= height_map.size()) {
+        return;
+    }
+    if(current_pos.second < 0 ) {
+        return;
+    }
+    if(current_pos.second >= height_map[current_pos.first].size()) {
+        return;
+    }
+    if(checked_coords.contains(current_pos)) {
+        return;
+    }
+    if(height_map[current_pos.first][current_pos.second] == 9 )
+    {
+        return;
+    }
+
+    basin.push_back(current_pos);
+    checked_coords.insert(current_pos);
+
+    coord_t next_direction;
+    coord_t next_pos;
+
+    next_direction.first = 0;
+    next_direction.second = -1;
+    next_pos.first = current_pos.first + next_direction.first;
+    next_pos.second = current_pos.second + next_direction.second;
+    fillBasin(next_pos, checked_coords, height_map, basin);
+
+    next_direction.first = 0;
+    next_direction.second = 1;
+    next_pos.first = current_pos.first + next_direction.first;
+    next_pos.second = current_pos.second + next_direction.second;
+    fillBasin(next_pos, checked_coords, height_map, basin);
+
+    next_direction.first = -1;
+    next_direction.second = 0;
+    next_pos.first = current_pos.first + next_direction.first;
+    next_pos.second = current_pos.second + next_direction.second;
+    fillBasin(next_pos, checked_coords, height_map, basin);
+
+    next_direction.first = 1;
+    next_direction.second = 0;
+    next_pos.first = current_pos.first + next_direction.first;
+    next_pos.second = current_pos.second + next_direction.second;
+    fillBasin(next_pos, checked_coords, height_map, basin);
+}
 
 int main() {
 
@@ -27,20 +84,36 @@ int main() {
     }
     input_data.close();
 
-    using coord_t = std::pair<int, int>;
-    using basin_t = std::vector<coord_t>;
-    std::vector<basin_t> basins;
-    std::map<coord_t, bool> progress;
+    std::multiset<std::size_t> basins;
+    std::set<coord_t> progress;
 
-    for(auto & row : height_map) {
-        for(int col = 0; col < row.size(); ++col) {
-            if( row[col] == 9 ) {
+
+    for(int row = 0; row < height_map.size(); ++row) {
+        for(int col = 0; col < height_map[row].size(); ++col) {
+            if( height_map[row][col] == 9 ) {
                 continue;
             }
+            coord_t current_pos(row, col);
+            if(progress.contains(current_pos)) {
+                continue;
+            }
+            basin_t basin;
+            fillBasin(current_pos, progress, height_map, basin);
+            if(basin.empty()) {
+                continue;
+            }
+            basins.insert(basin.size());
         }
     }
 
-    std::cout << "Solution: " << 0 << std::endl;
+    auto product = 1ul;
+    auto last = basins.rbegin();
+    for(int i = 0; i < 3; i++ ) {
+        product *= *last;
+        last++;
+    }
+    std::cout << "Solution: " << product << std::endl;
+
     return 0;
 }
 

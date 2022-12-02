@@ -15,7 +15,7 @@ namespace day9 {
     class input_parser {
 
     public:
-        static std::vector<int> get_numbers(const std::string &line);
+        static std::vector<int> get_numbers(const std::string &character);
     };
 }
 
