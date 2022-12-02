@@ -32,9 +32,7 @@ int main() {
     }
     input_data.close();
 
-    unsigned int solution = 0;
-
-    std::cout << "Solution: " << solution << std::endl;
+    std::cout << "Solution: " << *sums.rbegin() << std::endl;
     return 0;
 }
 
