@@ -33,14 +33,18 @@ int main() {
         i++;
         if( i == max_members_in_a_group) {
             for(const auto& item : group_member[0]) {
-                auto pos = group_member[1].find(item);
-                if(pos == std::string::npos) {
+                bool found = true;
+                for(int n = 1; n < max_members_in_a_group; n++) {
+                    auto pos = group_member[n].find(item);
+                    if(pos == std::string::npos) {
+                        found = false;
+                        break;
+                    }
+                }
+                if(!found) {
                     continue;
                 }
-                pos = group_member[2].find(item);
-                if(pos == std::string::npos) {
-                    continue;
-                }
+
                 auto priority = getPriority(item);
                 sum += priority;
                 break;
