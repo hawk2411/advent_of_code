@@ -14,6 +14,31 @@ int getPriority(const char &item) {
     return std::isupper(item) ? item - 38 : item - 96;
 }
 
+constexpr auto max_members_in_a_group = 3u;
+
+unsigned int getBadgeOfGroup(std::array<std::string, max_members_in_a_group> &group_members) {
+    auto result = 0u;
+    for (const auto &item: group_members[0]) {
+
+        auto pos = std::string::npos;
+
+        for (int n = 1; n < max_members_in_a_group; n++) {
+            pos = group_members[n].find(item);
+            if (pos == std::string::npos) {
+                break;
+            }
+        }
+        if (pos == std::string::npos) {
+            continue;
+        }
+
+        result = getPriority(item);
+        break;
+    }
+
+    return result;
+}
+
 int main() {
 
     const std::string input_file = "./input_data.txt";
@@ -24,33 +49,18 @@ int main() {
     }
 
     unsigned int sum = 0u;
-    constexpr auto max_members_in_a_group = 3u;
-    std::array<std::string, max_members_in_a_group> group_member;
+    std::array<std::string, max_members_in_a_group> group_members;
     std::string text_line;
     int i = 0;
     while (std::getline(input_data, text_line)) {
-        group_member[i] = text_line;
+        group_members[i] = text_line;
         i++;
-        if( i == max_members_in_a_group) {
-            for(const auto& item : group_member[0]) {
-                bool found = true;
-                for(int n = 1; n < max_members_in_a_group; n++) {
-                    auto pos = group_member[n].find(item);
-                    if(pos == std::string::npos) {
-                        found = false;
-                        break;
-                    }
-                }
-                if(!found) {
-                    continue;
-                }
-
-                auto priority = getPriority(item);
-                sum += priority;
-                break;
-            }
-            i = 0;
+        if( i < max_members_in_a_group) {
+            continue;
         }
+
+        i = 0;
+        sum += getBadgeOfGroup(group_members);
     }
     input_data.close();
 
