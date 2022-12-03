@@ -2,6 +2,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cmath>
+#include <memory>
+#include <map>
+#include <set>
+#include "input_parser.h"
+
 
 
 // A -> win against C 1
