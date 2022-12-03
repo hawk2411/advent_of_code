@@ -2,87 +2,51 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cmath>
-#include <memory>
-#include <map>
-#include <set>
-#include "input_parser.h"
+#include <array>
 
+int getPriority(const char &item) {
 
+    // 27 -  52
+    // A = 65 - 38  == 27
+    // 1 - 26
+    // a = 97 - 96 == 1
 
-// A -> win against C 1
-// B -> win against A 2 pts
-// C -> win against B 3
-
-unsigned int getPoints(const char opponent, const char me) {
-    auto opponent1 = (opponent - 'A')+1;
-    auto me1 = (me - 'A')+1;
-    if(me1 == opponent1) {
-        //drawn
-        return me1 + 3;
-    }
-    if( ((me1 - opponent1) == 1 ) || ((me1 - opponent1) == -2)){
-        return me1 + 6;
-    }
-    return me1;
-}
-
-char calcMyShape(const char shape, const char command) {
-    char result = shape;
-    if(command == 'Y') { return result; }
-
-    if(command == 'X') {
-        switch(shape) {
-            case 'A':
-                result = 'C';
-                break;
-            case 'B':
-                result ='A';
-                break;
-            case 'C':
-                result = 'B';
-                break;
-            default:
-                result = shape;
-        }
-    } else {
-        switch (shape) {
-            case 'A':
-                result = 'B';
-                break;
-            case 'B':
-                result = 'C';
-                break;
-            case 'C':
-                result = 'A';
-                break;
-            default:
-                result = shape;
-        }
-    }
-    return result;
+    return std::isupper(item) ? item - 38 : item - 96;
 }
 
 int main() {
 
     const std::string input_file = "./input_data.txt";
     std::ifstream input_data(input_file);
-    if(!input_data.is_open()) {
+    if (!input_data.is_open()) {
         std::cerr << "cannot find file " << input_file << std::endl;
         return 1;
     }
 
     unsigned int sum = 0u;
+    constexpr auto max_members_in_a_group = 3u;
+    std::array<std::string, max_members_in_a_group> group_member;
     std::string text_line;
-    while(std::getline(input_data, text_line)) {
-        if(text_line.empty()) {
-            continue;
+    int i = 0;
+    while (std::getline(input_data, text_line)) {
+        group_member[i] = text_line;
+        i++;
+        if( i == max_members_in_a_group) {
+            for(const auto& item : group_member[0]) {
+                auto pos = group_member[1].find(item);
+                if(pos == std::string::npos) {
+                    continue;
+                }
+                pos = group_member[2].find(item);
+                if(pos == std::string::npos) {
+                    continue;
+                }
+                auto priority = getPriority(item);
+                sum += priority;
+                break;
+            }
+            i = 0;
         }
-        const char opponentShape = text_line[0];
-        const char command = text_line[2];
-        const char myShape = calcMyShape(opponentShape, command);
-        auto points = getPoints(opponentShape, myShape);
-        sum += points;
     }
     input_data.close();
 
