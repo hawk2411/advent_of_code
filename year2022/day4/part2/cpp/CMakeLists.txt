@@ -1,4 +1,4 @@
-set(day "3")
+set(day "4")
 set(part "2")
 include(${CMAKE_SOURCE_DIR}/year2022/year.cmake)
 

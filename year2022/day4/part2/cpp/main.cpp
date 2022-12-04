@@ -2,65 +2,73 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <array>
+#include <memory>
 
-int getPriority(const char &item) {
+struct range {
+    unsigned long lower;
+    unsigned long upper;
 
-    // 27 -  52
-    // A = 65 - 38  == 27
-    // 1 - 26
-    // a = 97 - 96 == 1
+    [[nodiscard]] unsigned long distance()const {return (upper - lower) +1;}
+    [[nodiscard]] bool includes_complete(const range& smaller) const {
+        if(smaller.lower < this->lower) { return false; }
+        if(smaller.upper > this->upper) { return false; }
+        return true;
+    }
+    [[nodiscard]] bool areOverlappping(const range& other) const {
+        if(other.lower <= this->upper && other.lower >= this->lower) { return true; }
+        if(other.upper >= this->lower && other.upper <= this->upper) { return true; }
 
-    return std::isupper(item) ? item - 38 : item - 96;
-}
+        if(this->lower <= other.upper && this->lower >= other.lower) { return true; }
+        if(this->upper >= other.lower && this->upper <= other.lower) { return true; }
 
-constexpr auto max_members_in_a_group = 3u;
-
-unsigned int getBadgeOfGroup(std::array<std::string, max_members_in_a_group> &group_members) {
-    auto result = 0u;
-    for (const auto &item: group_members[0]) {
-
-        auto pos = std::string::npos;
-
-        for (int n = 1; n < max_members_in_a_group; n++) {
-            pos = group_members[n].find(item);
-            if (pos == std::string::npos) {
-                break;
-            }
-        }
-        if (pos == std::string::npos) {
-            continue;
-        }
-
-        result = getPriority(item);
-        break;
+        return false;
     }
 
-    return result;
-}
+    static std::unique_ptr<range> fabric(const std::string& init) {
+        auto pos = init.find('-');
+        if( pos == std::string::npos ) {return nullptr;}
+
+        auto result = std::make_unique<range>();
+        result->lower = std::strtoul(init.substr(0, pos).c_str(), nullptr, 10 );
+        result->upper = std::strtoul(init.substr(pos+1).c_str(), nullptr, 10);
+        return result;
+    }
+};
 
 int main() {
 
     const std::string input_file = "./input_data.txt";
     std::ifstream input_data(input_file);
-    if (!input_data.is_open()) {
+    if(!input_data.is_open()) {
         std::cerr << "cannot find file " << input_file << std::endl;
         return 1;
     }
 
     unsigned int sum = 0u;
-    std::array<std::string, max_members_in_a_group> group_members;
     std::string text_line;
-    int i = 0;
-    while (std::getline(input_data, text_line)) {
-        group_members[i] = text_line;
-        i++;
-        if( i < max_members_in_a_group) {
+    while(std::getline(input_data, text_line)) {
+        auto pos = text_line.find(',');
+        if(pos == std::string::npos) {
             continue;
         }
+        auto left = text_line.substr(0, pos);
+        auto right = text_line.substr(pos+1);
 
-        i = 0;
-        sum += getBadgeOfGroup(group_members);
+        auto range_left = range::fabric(left);
+        auto range_right = range::fabric(right);
+
+        if(range_left->areOverlappping(*range_right)) {
+            sum++;
+        }
+//        if(range_left->distance() >= range_right->distance()) {
+//            if(range_left->includes_complete(*range_right) ) {
+//                sum++;
+//            }
+//        } else {
+//            if (range_right->includes_complete(*range_left)) {
+//                sum++;
+//            }
+//        }
     }
     input_data.close();
 
