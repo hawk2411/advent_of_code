@@ -5,31 +5,32 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <cmath>
 
 int main() {
     std::ifstream input_data("./input_data.txt");
     if (!input_data.is_open()) { return 1; }
 
     std::string line;
-    std::set<unsigned int> data;
-    std::vector<unsigned int> ordered_data;
+    std::set<long> ordered_data;
 
     while(std::getline(input_data, line)) {
-        int number = std::strtol(line.c_str(), nullptr, 10);
-        data.insert(number);
-        ordered_data.push_back(number);
+        char* converting_error;
+        auto number = std::strtol(line.c_str(), &converting_error, 10);
+        ordered_data.insert(number);
     }
+    input_data.close();
 
-    std::sort(ordered_data.begin(), ordered_data.end());
-    auto last_number = ordered_data.back();
+    auto greatest_number =*ordered_data.rbegin();
+    auto smallest_number = *ordered_data.begin();
 
-    std::vector<unsigned int> must_have;
+    std::vector<long> must_have;
     unsigned int variations = 0;
-    unsigned int prev_number = last_number+3;
-    while(prev_number != 0) {
+    long prev_number = greatest_number + 3;
+    while(prev_number > smallest_number) {
         for(auto diff : {3,2,1}) {
             auto must_have_number = prev_number - diff;
-            if( data.contains(must_have_number) ) {
+            if( ordered_data.contains(must_have_number) ) {
                 must_have.push_back(must_have_number);
                 prev_number = must_have_number;
                 break;
@@ -38,7 +39,8 @@ int main() {
 
     }
 
-
-    std::cout << "Solution is: " <<  ordered_data.size() - must_have.size() << std::endl;
+    auto diff = ordered_data.size() - must_have.size();
+    std::cout << "Solution is: " <<  diff << std::endl;
+    std::cout << pow(2, diff) << "\n";
     return 0;
 }
