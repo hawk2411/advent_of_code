@@ -2,7 +2,7 @@ set(day "5")
 set(part "2")
 include(${CMAKE_SOURCE_DIR}/year2022/year.cmake)
 
-add_executable(${target} main.cpp input_parser.cpp input_parser.h)
+add_executable(${target} main.cpp)
 target_link_libraries(${target}
         PUBLIC
         global_lib)

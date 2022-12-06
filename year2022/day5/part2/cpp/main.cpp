@@ -1,39 +1,91 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <array>
+#include <stack>
 #include <vector>
-#include <memory>
+#include <optional>
+#include <regex>
 
-struct range {
-    unsigned long lower;
-    unsigned long upper;
+constexpr int max_stacks = 9;
 
-    [[nodiscard]] unsigned long distance()const {return (upper - lower) +1;}
-    [[nodiscard]] bool includes_complete(const range& smaller) const {
-        if(smaller.lower < this->lower) { return false; }
-        if(smaller.upper > this->upper) { return false; }
-        return true;
-    }
-    static bool areOverlappping(const range& left, const range& right)  {
-        if(right.lower <= left.upper && right.lower >= left.lower) { return true; }
-        if(right.upper >= left.lower && right.upper <= left.upper) { return true; }
+struct move_command_t {
+    unsigned int crates_to_move;
+    std::size_t from;
+    std::size_t to;
 
-        if(left.lower <= right.upper && left.lower >= right.lower) { return true; }
-        if(left.upper >= right.lower && left.upper <= right.lower) { return true; }
+    static move_command_t init(const std::string& input) {
+        move_command_t result {0, 0, 0};
+        if(input.empty()) {
+            return result;
+        }
+        std::regex digit_regex("\\d+");
 
-        return false;
-    }
+        auto digits_begin =
+                std::sregex_iterator(input.begin(), input.end(), digit_regex);
 
-    static std::unique_ptr<range> fabric(const std::string& init) {
-        auto pos = init.find('-');
-        if( pos == std::string::npos ) {return nullptr;}
+        result.crates_to_move = strtoul( (*digits_begin).str().c_str(), nullptr, 10);
+        digits_begin++;
+        result.from = strtoul((*digits_begin).str().c_str(), nullptr, 10);
+        digits_begin++;
+        result.to = strtoul((*digits_begin).str().c_str(), nullptr, 10);
 
-        auto result = std::make_unique<range>();
-        result->lower = std::strtoul(init.substr(0, pos).c_str(), nullptr, 10 );
-        result->upper = std::strtoul(init.substr(pos+1).c_str(), nullptr, 10);
         return result;
     }
 };
+
+std::array<std::stack<char>, max_stacks> create_stacks(const std::vector<std::string> &stacks_init_data)
+{
+    std::array<std::stack<char>, max_stacks> result;
+
+    for(auto it = stacks_init_data.rbegin(); it != stacks_init_data.rend(); it++) {
+        for( std::size_t stack_nr = 0; stack_nr < result.size(); stack_nr++) {
+            auto position = stack_nr * 4 + 1;
+            if( position > (*it).size())
+            {
+                continue;
+            }
+            auto crate = (*it)[position];
+            if ( crate < 65 || crate > 90 )
+            {
+                continue;
+            }
+            result[stack_nr].push(crate);
+        }
+    }
+
+    return result;
+}
+
+std::string interpret_move_commands(std::array<std::stack<char>, 9>& stacks,
+                                    const std::vector<std::string>& move_commands)
+{
+
+    for(const auto& command: move_commands) {
+
+        auto move_command = move_command_t::init(command);
+
+        std::stack<char> temp_stack;
+        for(auto i = 0u; i < move_command.crates_to_move; i++ ) {
+            auto crate = stacks[move_command.from-1].top();
+            temp_stack.push(crate);
+            stacks[move_command.from-1].pop();
+        }
+
+        for(auto i=0u; i < move_command.crates_to_move; i++ ) {
+            stacks[move_command.to-1].push(temp_stack.top());
+            temp_stack.pop();
+        }
+    }
+
+    std::string result;
+    for(const auto& stack :  stacks) {
+        if(stack.empty()) continue;
+
+        result += stack.top();
+    }
+    return result;
+}
 
 int main() {
 
@@ -44,25 +96,32 @@ int main() {
         return 1;
     }
 
-    auto sum = 0u;
+    std::vector<std::string> stacks_input_data;
+    std::vector<std::string> move_commands;
     std::string text_line;
     while(std::getline(input_data, text_line)) {
-        auto pos = text_line.find(',');
-        if(pos == std::string::npos) {
+        if(!text_line.empty()) {
+            stacks_input_data.push_back(text_line);
             continue;
         }
-        auto left = text_line.substr(0, pos);
-        auto right = text_line.substr(pos+1);
-
-        auto range_left = range::fabric(left);
-        auto range_right = range::fabric(right);
-
-        sum += (range::areOverlappping(*range_left, *range_right)) ? 1 : 0;
+        break;
     }
+
+    while(std::getline(input_data, text_line)) {
+        if(!text_line.empty()) {
+            move_commands.push_back(text_line);
+            continue;
+        }
+        break;
+    }
+
     input_data.close();
 
+    auto stacks = create_stacks(stacks_input_data);
 
-    std::cout << "Solution: " << sum << std::endl;
+    std::string result = interpret_move_commands(stacks, move_commands);
+
+    std::cout << "Solution: " << result << std::endl;
     return 0;
 }
 

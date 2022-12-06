@@ -4,18 +4,80 @@
 #include <array>
 #include <stack>
 #include <vector>
+#include <optional>
+#include <regex>
 
-std::unique_ptr<std::array<std::stack<char>, 9>> create_stacks(const std::vector<std::string> &stacks_init_data)
+constexpr int max_stacks = 9;
+
+struct move_command_t {
+    unsigned int crates_to_move;
+    std::size_t from;
+    std::size_t to;
+
+    static move_command_t init(const std::string& input) {
+        move_command_t result {0, 0, 0};
+        if(input.empty()) {
+            return result;
+        }
+        std::regex digit_regex("\\d+");
+
+        auto digits_begin =
+                std::sregex_iterator(input.begin(), input.end(), digit_regex);
+
+        result.crates_to_move = strtoul( (*digits_begin).str().c_str(), nullptr, 10);
+        digits_begin++;
+        result.from = strtoul((*digits_begin).str().c_str(), nullptr, 10);
+        digits_begin++;
+        result.to = strtoul((*digits_begin).str().c_str(), nullptr, 10);
+
+        return result;
+    }
+};
+
+std::array<std::stack<char>, max_stacks> create_stacks(const std::vector<std::string> &stacks_init_data)
 {
-    auto result = std::make_unique<std::array<std::stack<char>, 9>>();
+    std::array<std::stack<char>, max_stacks> result;
+
+    for(auto it = stacks_init_data.rbegin(); it != stacks_init_data.rend(); it++) {
+        for( std::size_t stack_nr = 0; stack_nr < result.size(); stack_nr++) {
+            auto position = stack_nr * 4 + 1;
+            if( position > (*it).size())
+            {
+                continue;
+            }
+            auto crate = (*it)[position];
+            if ( crate < 65 || crate > 90 )
+            {
+                continue;
+            }
+            result[stack_nr].push(crate);
+        }
+    }
 
     return result;
 }
 
-std::string interpret_move_commands(const std::array<std::stack<char>, 9>& stacks,
+std::string interpret_move_commands(std::array<std::stack<char>, 9>& stacks,
                                     const std::vector<std::string>& move_commands)
 {
-    return {};
+
+    for(const auto& command: move_commands) {
+
+        auto move_command = move_command_t::init(command);
+
+        for(auto i = 0u; i < move_command.crates_to_move; i++ ) {
+            auto crate = stacks[move_command.from-1].top();
+            stacks[move_command.to-1].push(crate);
+            stacks[move_command.from-1].pop();
+        }
+    }
+    std::string result;
+    for(const auto& stack :  stacks) {
+        if(stack.empty()) continue;
+
+        result += stack.top();
+    }
+    return result;
 }
 
 int main() {
@@ -50,7 +112,7 @@ int main() {
 
     auto stacks = create_stacks(stacks_input_data);
 
-    std::string result = interpret_move_commands(*stacks, move_commands);
+    std::string result = interpret_move_commands(stacks, move_commands);
 
     std::cout << "Solution: " << result << std::endl;
     return 0;
