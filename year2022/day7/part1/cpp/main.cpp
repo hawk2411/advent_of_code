@@ -120,7 +120,7 @@ public:
         }
     }
 
-     [[nodiscard]] std::size_t get_solution() const {
+     [[nodiscard]] std::size_t get_solution(const std::size_t at_most) const {
 
         std::vector<const directory_t*> directories;
         directories.push_back(_file_system.getRootDir());
@@ -129,7 +129,7 @@ public:
         std::size_t result = 0;
         for(const auto& dir : directories) {
             const auto dir_size = dir->getSize();
-            if( dir_size <= 100000) {
+            if( dir_size <= at_most) {
                 result += dir_size;
             }
         }
@@ -236,7 +236,7 @@ int main() {
 
     device dev;
     dev.execute(programm);
-    std::size_t result = dev.get_solution();
+    std::size_t result = dev.get_solution(100000);
 
     std::cout << "Solution: " << result << std::endl;
     return 0;
