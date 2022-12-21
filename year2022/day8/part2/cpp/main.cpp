@@ -18,7 +18,7 @@ std::size_t countVisibleTrees(long  column, long row, const std::vector<std::vec
     //looking to left
     for (long x = column - 1; x >= 0; x--) {
         auto tree = forest[row][x];
-        view_in_each_direction[0] += ( tree <= view_point) ? 1 : 0;
+        view_in_each_direction[0]++;
 
         if (tree >= view_point) {
             break;
@@ -28,7 +28,7 @@ std::size_t countVisibleTrees(long  column, long row, const std::vector<std::vec
     //looking to right
     for (long x = column + 1; x < forest[row].size(); x++) {
         auto tree = forest[row][x];
-        view_in_each_direction[1] += ( tree <= view_point) ? 1 : 0;
+        view_in_each_direction[1]++;
 
         if (forest[row][x] >= view_point) {
             break;
@@ -38,16 +38,16 @@ std::size_t countVisibleTrees(long  column, long row, const std::vector<std::vec
     //looking to top
     for (long y = row - 1; y >= 0; y--) {
         auto tree = forest[y][column];
-        view_in_each_direction[2] += ( tree <= view_point) ? 1 : 0;
+        view_in_each_direction[2]++;
         if (tree >= view_point) {
             break;
         }
     }
 
     //looking to bottom
-    for (long y = row + 1; y >= forest.size(); y++) {
+    for (long y = row + 1; y < forest.size(); y++) {
         auto tree = forest[y][column];
-        view_in_each_direction[3] += ( tree <= view_point) ? 1 : 0;
+        view_in_each_direction[3]++;
         if (tree >= view_point) {
             break;
         }
@@ -59,30 +59,23 @@ std::size_t countVisibleTrees(long  column, long row, const std::vector<std::vec
     });
 }
 
-int getVisibleTrees(const std::vector<std::vector<int>>& forest) {
+std::size_t getPanoramaProduct(const std::vector<std::vector<int>>& forest) {
 
-    int countVisibleTrees = 0;
+    auto maxVisibleTrees = 0ul;
     auto right_border = forest[0].size();
     auto bottom_border = forest.size();
 
     for(std::size_t row = 0; row < bottom_border; row++) {
 
         for(std::size_t column = 0; column < right_border; column++) {
-            if( row == 0 ||  column == 0 ) {
-                countVisibleTrees++;
-                continue;
-            }
-            if (row == (bottom_border - 1) || column == (right_border - 1)) {
-                countVisibleTrees++;
-                continue;
-            }
-            if(countVisibleTrees(column, row, forest) )  {
-                countVisibleTrees++;
-                continue;
+
+            auto trees = countVisibleTrees(static_cast<long>(column), static_cast<long>(row), forest);
+            if(trees > maxVisibleTrees) {
+                maxVisibleTrees = trees;
             }
         }
     }
-    return countVisibleTrees;
+    return maxVisibleTrees;
 }
 
 int main() {
@@ -107,7 +100,7 @@ int main() {
     }
     input_data.close();
 
-    int result = getVisibleTrees(forest);
+    auto result = getPanoramaProduct(forest);
 
     std::cout << "Solution: " << result << std::endl;
     return 0;
