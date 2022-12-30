@@ -55,11 +55,11 @@ std::size_t countVisibleTrees(long  column, long row, const std::vector<std::vec
 
     return std::accumulate(view_in_each_direction.cbegin(),view_in_each_direction.cend(), 1,
                                           [](auto res, const auto& value){
-        return res*value;
+        return res * value;
     });
 }
 
-std::size_t getPanoramaProduct(const std::vector<std::vector<int>>& forest) {
+auto getPanoramaProduct(const std::vector<std::vector<int>>& forest) {
 
     auto maxVisibleTrees = 0ul;
     auto right_border = forest[0].size();

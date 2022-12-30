@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-bool isVisble(std::size_t  x, std::size_t y, const std::vector<std::vector<int>>& forest) {
+bool isVisible(std::size_t  x, std::size_t y, const std::vector<std::vector<int>>& forest) {
 
     auto current_tree = forest[y][x];
 
@@ -53,9 +53,9 @@ bool isVisble(std::size_t  x, std::size_t y, const std::vector<std::vector<int>>
     return visible;
 }
 
-int getVisibleTrees(const std::vector<std::vector<int>>& forest) {
+auto getVisibleTrees(const std::vector<std::vector<int>>& forest) {
 
-    int countVisibleTrees = 0;
+    auto countVisibleTrees = 0;
     auto right_border = forest[0].size();
     auto bottom_border = forest.size();
 
@@ -70,7 +70,7 @@ int getVisibleTrees(const std::vector<std::vector<int>>& forest) {
                 countVisibleTrees++;
                 continue;
             }
-            if(isVisble(column, row, forest) )  {
+            if(isVisible(column, row, forest) )  {
                 countVisibleTrees++;
                 continue;
             }
@@ -101,7 +101,7 @@ int main() {
     }
     input_data.close();
 
-    int result = getVisibleTrees(forest);
+    auto result = getVisibleTrees(forest);
 
     std::cout << "Solution: " << result << std::endl;
     return 0;
