@@ -85,7 +85,6 @@ struct coordinate_t {
 
 struct rope_item {
     coordinate_t _position;
-    direction_t _direction;
 
     virtual void make_a_step(const rope_item& predecessor) {
         const auto diff_x = predecessor._position.x - _position.x;
@@ -98,28 +97,13 @@ struct rope_item {
                 _position.y = _position.y + ((diff_y < 0) ? -1 : 1);
             }
         }
-//        if((abs(diff_y) > 1)) {
-//            _position.y = predecessor._position.y + -1 * predecessor._direction.getY();
-//            _position.x = _position.x + _direction.getX();
-//        }
-//        _direction.setX( predecessor._position.x - _position.x);
-//        _direction.setY( predecessor._position.y - _position.y);
     }
-
-    void print_debug() const
-    {
-        std::cout << "Direction: " << _direction.getX() << " : " << _direction.getY() << std::endl;
-        std::cout << "Position: " << _position.x << " : " << _position.y << std::endl;
-
-    }
-
 };
 
 struct head_t : public rope_item {
     void make_a_step(const direction_t& direction) {
-        _direction = direction;
-        _position.x += _direction.getX();
-        _position.y += _direction.getY();
+        _position.x += direction.getX();
+        _position.y += direction.getY();
     }
 };
 
@@ -148,32 +132,19 @@ struct rope_t {
     head_t head;
     tail_t tail;
     constexpr static int max_knots = 8;
-    std::array<rope_item, max_knots> knots;
+    std::array<rope_item, max_knots> nodes;
 
     void move(const std::string& move_command) {
-        std::cout << "Command: " << move_command << "\n";
         auto new_direction = direction_t::create_direction(move_command);
-        auto is_direction_changed = (new_direction != head._direction);
 
         auto steps = static_cast<int>(std::strtol( move_command.substr(2).c_str(), nullptr, 10 ));
         for(int i = 0; i < steps; i++) {
-            std::cout << "Step: " << i << std::endl;
             head.make_a_step(new_direction);
-
-            std::cout << " head: \n";
-            head.print_debug();
-
-            knots[0].make_a_step(head);
-            std::cout << " node 0: \n";
-            knots[0].print_debug();
+            nodes[0].make_a_step(head);
             for(int n=1; n < max_knots; n++) {
-                knots[n].make_a_step(knots[n-1]);
-                std::cout << " node " << n << ": \n";
-                knots[n].print_debug();
+                nodes[n].make_a_step(nodes[n - 1]);
             }
-            tail.make_a_step(*knots.rbegin());
-            std::cout << " tail: \n";
-            tail.print_debug();
+            tail.make_a_step(*nodes.rbegin());
         }
 
     }
@@ -181,20 +152,8 @@ struct rope_t {
     [[nodiscard]] std::size_t tail_positions_count()const {
         return tail._positions.size();
         }
-
-    void tail_positions()const {
-        std::cout << "--\n";
-        for(const auto& pos:  tail._positions) {
-            std::cout << "x: " << pos.x << " | y: " << pos.y << "\n";
-        }
-    }
-
-    void print_debug()const {
-        for(const auto& ri : knots) {
-            ri.print_debug();
-        }
-    }
 };
+
 int main() {
 
     const std::string input_file = "./input_data.txt";
@@ -213,9 +172,6 @@ int main() {
 
 
     std::cout << "Solution: " << rope.tail_positions_count() << std::endl;
-
-    rope.print_debug();
-    rope.tail_positions();
 
     return 0;
 }
