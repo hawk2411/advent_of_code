@@ -6,6 +6,8 @@
 #include <memory>
 #include <map>
 #include <set>
+#include <trim_functions.h>
+
 #include "input_parser.h"
 
 
@@ -18,31 +20,39 @@ int main() {
         std::cerr << "cannot find file " << input_file << std::endl;
         return 1;
     }
-    auto sum  = 0u;
-    std::multiset<decltype(sum)> sums;
+    long sum  = 0;
 
     std::string text_line;
     while(std::getline(input_data, text_line)) {
-        if( text_line.empty() ) {
-            sums.insert(sum);
-            sum = 0u;
-            continue;
+        string_trimmer::trim(text_line);
+        if(text_line.empty()) {
+            break;
         }
-        sum += year2022_day1::get_number(text_line);
-    }
-    input_data.close();
 
-    if(sum > 0) {
-        sums.insert(sum);
-    }
-    auto last = sums.rbegin();
-    sum = 0;
-    for(int i = 0; i < 3; i++ ) {
-        sum += *last;
-        last++;
+        char left = '\0';
+        char right = '\0';
+
+        for(const auto c : text_line) {
+            if(isdigit(c)) {
+                left = c;
+                break;
+            }
+        }
+        auto last = text_line.rbegin();
+        while ( last != text_line.rend()) {
+            if(isdigit(*last)){
+                right = *last;
+                break;
+            }
+            last++;
+        }
+        std::string digit = {left, right};
+        char *error_break;;
+        auto result = std::strtol(digit.c_str(), &error_break, 10);
+        sum += result;
     }
 
-    std::cout << "Solution: " << *sums.rbegin() << std::endl;
+    std::cout << "Solution: " << sum << std::endl;
     return 0;
 }
 
