@@ -1,5 +1,5 @@
 set(day "1")
-set(part "1")
+set(part "2")
 include(${CMAKE_SOURCE_DIR}/target.cmake)
 
 add_executable(${target} main.cpp)

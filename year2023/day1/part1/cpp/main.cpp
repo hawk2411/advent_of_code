@@ -3,14 +3,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
-#include <memory>
-#include <map>
-#include <set>
 #include <trim_functions.h>
-
-#include "input_parser.h"
-
-
 
 int main() {
 
