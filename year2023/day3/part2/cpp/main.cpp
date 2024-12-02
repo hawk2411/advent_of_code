@@ -70,9 +70,18 @@ long GetNumber(int x, int y) {
     return strtol(sub.c_str(), &pEnd, 10);
 }
 
-long GetNumberDiagonal(int x, int y) {
-    long sum = GetNumber(x-1, y);
-    sum += GetNumber(x+1, y);
+long GetNumberDiagonal(int x, int y, int& count_numbers ) {
+    long sum = 0;
+    long number = GetNumber(x-1, y);
+    if(number != 0) {
+        count_numbers++;
+        sum += number;
+    }
+    number = GetNumber(x+1, y);
+    if(  number != 0) {
+        count_numbers++;
+        sum += number;
+    }
 
     return sum;
 }
@@ -102,22 +111,36 @@ int main() {
         if (!is_symbol(symbol)) {
             continue;
         }
+        if(symbol != '*') {
+            continue;
+        }
+        int count_surrounded_numbers = 0;
 
         long symbol_sum = 0;
         //check for numbers above
         long number = GetNumber(p.x, p.y - 1);
-        symbol_sum += number;
         if (number == 0) {
-            symbol_sum += GetNumberDiagonal(p.x, p.y - 1);
+            symbol_sum += GetNumberDiagonal(p.x, p.y - 1, count_surrounded_numbers);
+        }
+        else {
+            count_surrounded_numbers++;
         }
 
-        symbol_sum += GetNumber(p.x - 1, p.y);
-        symbol_sum += GetNumber(p.x + 1, p.y);
+        number = GetNumber(p.x - 1, p.y);
+        if(number != 0) {
+            symbol_sum += number;
+            count_surrounded_numbers++;
+        }
+        number = GetNumber(p.x + 1, p.y);
+        if(number != 0) {
+            symbol_sum += number;
+            count_surrounded_numbers++;
+        }
 
         number = GetNumber(p.x, p.y + 1);
         symbol_sum += number;
         if (number == 0) {
-            symbol_sum += GetNumberDiagonal(p.x, p.y + 1);
+            symbol_sum += GetNumberDiagonal(p.x, p.y + 1, count_surrounded_numbers);
         }
 
         sum += symbol_sum;

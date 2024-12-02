@@ -4,11 +4,12 @@
 
 #ifndef ADVENT_OF_CODE_TRIM_FUNCTIONS_H
 #define ADVENT_OF_CODE_TRIM_FUNCTIONS_H
+#include <algorithm>
 #include <string>
 
 struct string_trimmer {
     static void ltrim(std::string &s) {
-        s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+        s.erase(s.begin(), std::ranges::find_if(s, [](unsigned char ch) {
             return !std::isspace(ch);
         }));
     }
@@ -27,6 +28,29 @@ struct string_trimmer {
     }
 
 };
+
+namespace string_functions
+{
+    std::string ltrim(std::string s) {
+        s.erase(s.begin(), std::ranges::find_if(s, [](unsigned char ch) {
+            return !std::isspace(ch);
+        }));
+        return s;
+    }
+
+    std::string rtrim(std::string s) {
+        s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+            return !std::isspace(ch);
+        }).base(), s.end());
+
+        return s;
+    }
+
+    std::string trim(std::string s){
+        return rtrim(ltrim(s));
+    }
+}
+
 // trim from start (in place)
 
 #endif //ADVENT_OF_CODE_TRIM_FUNCTIONS_H

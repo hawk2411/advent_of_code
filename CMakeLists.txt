@@ -66,5 +66,7 @@ add_subdirectory(year2022/day8/part1/cpp)
 add_subdirectory(year2022/day8/part2/cpp)
 add_subdirectory(year2022/day9/part1/cpp)
 add_subdirectory(year2022/day9/part2/cpp)
+add_subdirectory(year2022/day10/part1/cpp)
 
 add_subdirectory(year2023)
+add_subdirectory(year2024)
