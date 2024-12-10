@@ -10,3 +10,6 @@ add_subdirectory(day4/part1/cpp)
 add_subdirectory(day4/part2/cpp)
 add_subdirectory(day5/part1/cpp)
 add_subdirectory(day5/part2/cpp)
+add_subdirectory(day6/part1/cpp)
+add_subdirectory(day6/part2/cpp)
+
