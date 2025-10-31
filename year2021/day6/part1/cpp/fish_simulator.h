@@ -10,6 +10,7 @@
 #include <array>
 #include <thread>
 #include <future>
+#include <algorithm>
 
 const unsigned int daysBeforeFirstBirth = 8;
 const unsigned int daysBeforeNextBirth = 6;

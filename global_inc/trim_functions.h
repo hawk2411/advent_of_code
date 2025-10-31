@@ -8,7 +8,7 @@
 #include <string>
 
 struct string_trimmer {
-    static void ltrim(std::string &s) {
+    static inline void ltrim(std::string &s) {
         s.erase(s.begin(), std::ranges::find_if(s, [](unsigned char ch) {
             return !std::isspace(ch);
         }));
@@ -31,14 +31,14 @@ struct string_trimmer {
 
 namespace string_functions
 {
-    std::string ltrim(std::string s) {
+    inline std::string ltrim(std::string s) {
         s.erase(s.begin(), std::ranges::find_if(s, [](unsigned char ch) {
             return !std::isspace(ch);
         }));
         return s;
     }
 
-    std::string rtrim(std::string s) {
+    inline std::string rtrim(std::string s) {
         s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
             return !std::isspace(ch);
         }).base(), s.end());
@@ -46,7 +46,7 @@ namespace string_functions
         return s;
     }
 
-    std::string trim(std::string s){
+    inline std::string trim(std::string s){
         return rtrim(ltrim(s));
     }
 }
