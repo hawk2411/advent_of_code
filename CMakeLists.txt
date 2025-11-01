@@ -28,7 +28,6 @@ add_subdirectory(year2020/day10/part2/cpp)
 add_subdirectory(year2020/day17/part1/cpp)
 add_subdirectory(year2020/day17/part2/cpp)
 
-
 add_subdirectory(year2021/day1/part1/cpp)
 add_subdirectory(year2021/day1/part2/cpp)
 add_subdirectory(year2021/day2/part1/cpp)
@@ -69,3 +68,4 @@ add_subdirectory(year2022/day10/part1/cpp)
 
 add_subdirectory(year2023)
 add_subdirectory(year2024)
+
