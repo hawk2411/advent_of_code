@@ -3,10 +3,10 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <trim_functions.h>
 #include <utility>
 #include <vector>
-#include <optional>
+
+#include "room.h"
 
 using position_t = std::pair<int, int>;
 using direction_t = std::pair<int, int>;
@@ -16,64 +16,66 @@ using direction_t = std::pair<int, int>;
   ever return to that position.
 */
 
-std::optional<position_t> get_next_obstacle_position(const std::vector<std::string>& room, const std::set<position_t>& obstructions, const position_t& guard_position, const direction_t& guard_direction)
-{
-  int next_x = guard_position.first + guard_direction.first;
-  int next_y = guard_position.second + guard_direction.second;
-  if (next_x >= room[0].size() || next_y >= room.size() || next_x < 0 || next_y < 0)
-  {
-    //out of room border
-    return {};
-  }
-  position_t next_guard_position = {next_x, next_y};
 
-  if (obstructions.contains(next_guard_position))
-  {
-    //turn the guard to the right
-    int x =  guard_direction.second * -1;
-    int y = guard_direction.first * 1;
-    const direction_t next_guard_direction {x, y};
-    return get_next_obstacle_position(room, obstructions, guard_position, next_guard_direction);
-  }
-  return next_guard_position;
-}
-
-std::optional<position_t> do_next_step(const std::vector<std::string>& room, const std::set<position_t>& obstructions, const position_t& guard_position, direction_t& guard_direction) {
-  int next_x = guard_position.first + guard_direction.first;
-  int next_y = guard_position.second + guard_direction.second;
-  if (next_x >= room[0].size() || next_y >= room.size() || next_x < 0 || next_y < 0)
-  {
-    //out of room border
-    return {};
-  }
-  position_t next_guard_position = {next_x, next_y};
-
-  if (obstructions.contains(next_guard_position))
-  {
-    //turn the guard to the right
-    int x =  guard_direction.second * -1;
-    int y = guard_direction.first * 1;
-    guard_direction = {x, y};
-
-    return do_next_step(room, obstructions, guard_position, guard_direction);
-  }
-  return next_guard_position;
-}
-
-bool is_loop(const std::vector<std::string>& room, const std::set<position_t>& obstacles, const std::optional<position_t>& start_postion, const position_t& guard_position, const direction_t& direction) {
-
-  direction_t virt_direction = {direction.first, direction.second};
-
-  auto next_position = do_next_step(room, obstacles, guard_position, virt_direction);
-  while(next_position.has_value()) {
-    if(next_position.value() == start_postion) {
-      return true;
-    }
-    next_position = do_next_step(room, obstacles, next_position.value(), virt_direction);
-  }
-  //guard is out of bounds
-  return false;
-}
+//std::optional<position_t> get_next_obstacle_position(const std::vector<std::string>& room, const std::set<position_t>& obstructions, const guard_t& guard_position)
+//{
+//  int next_x = guard_position.position.first + guard_position.direction.first;
+//  int next_y = guard_position.position.second + guard_position.direction.second;
+//  if (next_x >= room[0].size() || next_y >= room.size() || next_x < 0 || next_y < 0)
+//  {
+//    //out of room border
+//    return {};
+//  }
+//  position_t obstacle = {next_x, next_y};
+//
+//  if (obstructions.contains(obstacle))
+//  {
+//    //turn the guard to the right
+//    guard_t turn_right {guard_position};
+//    turn_right.turn_right();
+//    return get_next_obstacle_position(room, obstructions, turn_right);
+//  }
+//  return obstacle;
+//}
+//
+//std::optional<position_t> do_next_step(const std::vector<std::string>& room, const std::set<position_t>& obstructions, const position_t& guard_position, direction_t& guard_direction) {
+//  int next_x = guard_position.first + guard_direction.first;
+//  int next_y = guard_position.second + guard_direction.second;
+//  if (next_x >= room[0].size() || next_y >= room.size() || next_x < 0 || next_y < 0)
+//  {
+//    //out of room border
+//    return {};
+//  }
+//  position_t next_guard_position = {next_x, next_y};
+//
+//  if (obstructions.contains(next_guard_position))
+//  {
+//    //turn the guard to the right
+//    int x =  guard_direction.second * -1;
+//    int y = guard_direction.first * 1;
+//    guard_direction = {x, y};
+//
+//    return do_next_step(room, obstructions, guard_position, guard_direction);
+//  }
+//  return next_guard_position;
+//}
+//
+//bool is_loop(const std::vector<std::string>& room, const std::set<position_t>& obstacles, const std::optional<position_t>& start_postion, const position_t& guard_position, const direction_t& direction) {
+//
+//  direction_t virt_direction = {direction.first, direction.second};
+//
+//  std::set<guard_t> guard_positions;
+//
+//  auto next_position = do_next_step(room, obstacles, guard_position, virt_direction);
+//  while(next_position.has_value()) {
+//    if(next_position.value() == start_postion) {
+//      return true;
+//    }
+//    next_position = do_next_step(room, obstacles, next_position.value(), virt_direction);
+//  }
+//  //guard is out of bounds
+//  return false;
+//}
 
 int main() {
 
@@ -87,31 +89,10 @@ int main() {
 
   std::string text_line;
 
-  std::vector<std::string> room;
-  std::set<position_t> obstructions;
-  position_t guard_position;
-  direction_t guard_direction{0,-1};  //up
-
-  while (std::getline(input_data, text_line)) {
-    string_trimmer::trim(text_line);
-    if (text_line.empty()) {
-      break;
-    }
-    room.push_back(text_line);
-
-    for (int x = 0; x < text_line.size(); ++x) {
-      if (text_line[x] == '#') {
-        auto insert_result = obstructions.insert(std::make_pair(x, room.size()-1));
-        if (!insert_result.second) {
-          std::cerr << "cannot insert " << x << std::endl;
-          return 1;
-        }
-      }
-      else if (text_line[x] == '^') {
-        guard_position.first = x;
-        guard_position.second = static_cast<int>(room.size()-1);
-      }
-    }
+  auto room = Room::Create(input_data);
+  if (room == nullptr) {
+    std::cerr << "cannot open file " << input_file << std::endl;
+    return 1;
   }
 
   input_data.close();
@@ -120,34 +101,44 @@ int main() {
 
 
   //here we check if is possible to place an obstacle in front of guard
-  auto obstruction_position = get_next_obstacle_position(room, obstructions, guard_position, guard_direction);
+  auto obstruction_position = room->GetNextPossibleObstructionPosition();
+
   while (obstruction_position.has_value()) {
-    std::cout << "Obstacle position: " << obstruction_position.value().first << " " << obstruction_position.value().second << std::endl;
+    std::cout << "Obstacle position: " << obstruction_position.value().X() << " " << obstruction_position.value().Y() <<
+	    '\n';
+	Room virt_room = *room;
+    if (virt_room.PlaceObstruction(obstruction_position.value())) {
+
+    }
     //place the obstacle and let the guard runs again it
-    obstructions.insert(obstruction_position.value());
-    direction_t next_guard_direction = guard_direction;
-    std::cout<< "Guard position: " << guard_position.first << " " << guard_position.second << std::endl;
-    std::cout << "Direction: " << guard_direction.first << " " << guard_direction.second << std::endl;
+    if ( ! room->PlaceObstruction(obstruction_position.value()) ) {
+      std::cerr << "cannot place obstruction" << std::endl;
+      return 1;
+    }
+    // direction_t next_guard_direction = guard.direction;
+    // std::cout<< "Guard position: " << guard.position.first << " " << guard.position.second << std::endl;
+    // std::cout << "Direction: " << guard.direction.first << " " << guard.direction.second << std::endl;
     //the guard runs again the placed obstacle this changes his direction to the right and make a step
-    auto next_guard_pos =  do_next_step(room, obstructions, guard_position, next_guard_direction);
-    if(!next_guard_pos.has_value()) {
+    std::optional<Guard> next_guard = room->MoveGuard();
+    //auto next_guard_pos =  do_next_step(room, obstructions, guard.position, next_guard_direction);
+    if(!next_guard.has_value()) {
       break;
     }
     //now we let guard continue his patrol. If he goes out of bounds then we have no loop but
     //if he comes back to guard_position then we have a loop
-    if( is_loop(room, obstructions, guard_position, next_guard_pos.value(), next_guard_direction) ) {
+    if( room->IsGuardInLoop()) {
       ++count_loops;
       std::cout << "Found a loop. Current count: " << count_loops << std::endl;
 
     }
     //remove virtual obstacle
-    obstructions.erase(obstruction_position.value());
+    room->RemoveObstruction(obstruction_position.value());
 
     //and let the guard go his normal way
-    next_guard_pos =  do_next_step(room, obstructions, guard_position, guard_direction);
+    next_guard_pos =  do_next_step(room, obstructions, guard, guard_direction);
     if(next_guard_pos.has_value()) {
-      guard_position = next_guard_pos.value();
-      obstruction_position = get_next_obstacle_position(room, obstructions, guard_position, guard_direction);
+      guard = next_guard_pos.value();
+      obstruction_position = get_next_obstacle_position(room, obstructions, guard, guard_direction);
     }
     else {
       obstruction_position = {};

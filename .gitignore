@@ -3,4 +3,5 @@ cmake-build-*/
 build/
 .cache/
 out/
+.vs/
 compile_commands.json
