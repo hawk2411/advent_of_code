@@ -11,39 +11,42 @@
 
 #include "guard.h"
 
-struct Room {
-    int _width {0};
-    int _length {0};
-    std::set<Position> _obstructions;
-    Guard _guard;
+class Room {
+public:
 
+    Room() = default;
     void SetWidth(int size);
 
     void IncreaseLength();
 
-    int GetWidth() const;
+    [[nodiscard]] int GetWidth() const;
 
-    int GetLength() const;
+    [[nodiscard]] int GetLength() const;
 
-    bool IsOutOfBound(const Position& position) const;
+    [[nodiscard]] bool IsOutOfBound(const Position& position) const;
 
-    std::optional<Position> GetNextPossibleObstructionPosition() const;
+    [[nodiscard]] std::optional<Guard> GetNextPossibleGuardPosition(Guard guard) const;
 
-    Direction GetGuardDirection()const {return _guard.GetDirection();}
+    [[nodiscard]] Direction GetGuardDirection()const {return _guard.GetDirection();}
 
-    bool PlaceObstruction(const Position& position);
+    [[nodiscard]]bool PlaceObstruction(const Position& position);
 
-    void PlaceGuard(Position position);
+    void PlaceGuard(const Position& position, const Direction& direction);
+    void PlaceGuard(const Guard& guard);
 
-    std::optional<Guard> MoveGuard();
+    [[nodiscard]]std::optional<Guard> MoveGuard();
 
     void RemoveObstruction(const Position& position );
 
-    bool IsGuardInLoop();
+    [[nodiscard]]bool IsGuardInLoop();
+    [[nodiscard]] Guard GetGuard()const;
 
     static std::unique_ptr<Room> Create(std::ifstream & input_data);
 private:
-    std::optional<Position> GetNextPossibleObstructionPosition(const Direction& direction)const;
+    int _width {0};
+    int _length {0};
+    std::set<Position> _obstructions;
+    Guard _guard;
 
 };
 

@@ -78,73 +78,48 @@ using direction_t = std::pair<int, int>;
 //}
 
 int main() {
-
-  const std::string input_file = "./input_data.txt";
-  std::ifstream input_data(input_file);
-  if (!input_data.is_open()) {
-    std::cerr << "cannot find file " << input_file << std::endl;
-    return 1;
-  }
-  long sum = 0;
-
-  std::string text_line;
-
-  auto room = Room::Create(input_data);
-  if (room == nullptr) {
-    std::cerr << "cannot open file " << input_file << std::endl;
-    return 1;
-  }
-
-  input_data.close();
-
-  int count_loops = 0;
-
-
-  //here we check if is possible to place an obstacle in front of guard
-  auto obstruction_position = room->GetNextPossibleObstructionPosition();
-
-  while (obstruction_position.has_value()) {
-    std::cout << "Obstacle position: " << obstruction_position.value().X() << " " << obstruction_position.value().Y() <<
-	    '\n';
-	Room virt_room = *room;
-    if (virt_room.PlaceObstruction(obstruction_position.value())) {
-
+    const std::string input_file = "./input_data.txt";
+    std::ifstream input_data(input_file);
+    if (!input_data.is_open()) {
+        std::cerr << "cannot find file " << input_file << std::endl;
+        return 1;
     }
-    //place the obstacle and let the guard runs again it
-    if ( ! room->PlaceObstruction(obstruction_position.value()) ) {
-      std::cerr << "cannot place obstruction" << std::endl;
-      return 1;
-    }
-    // direction_t next_guard_direction = guard.direction;
-    // std::cout<< "Guard position: " << guard.position.first << " " << guard.position.second << std::endl;
-    // std::cout << "Direction: " << guard.direction.first << " " << guard.direction.second << std::endl;
-    //the guard runs again the placed obstacle this changes his direction to the right and make a step
-    std::optional<Guard> next_guard = room->MoveGuard();
-    //auto next_guard_pos =  do_next_step(room, obstructions, guard.position, next_guard_direction);
-    if(!next_guard.has_value()) {
-      break;
-    }
-    //now we let guard continue his patrol. If he goes out of bounds then we have no loop but
-    //if he comes back to guard_position then we have a loop
-    if( room->IsGuardInLoop()) {
-      ++count_loops;
-      std::cout << "Found a loop. Current count: " << count_loops << std::endl;
+    long sum = 0;
 
-    }
-    //remove virtual obstacle
-    room->RemoveObstruction(obstruction_position.value());
+    std::string text_line;
 
-    //and let the guard go his normal way
-    next_guard_pos =  do_next_step(room, obstructions, guard, guard_direction);
-    if(next_guard_pos.has_value()) {
-      guard = next_guard_pos.value();
-      obstruction_position = get_next_obstacle_position(room, obstructions, guard, guard_direction);
+    auto room = Room::Create(input_data);
+    if (room == nullptr) {
+        std::cerr << "cannot open file " << input_file << std::endl;
+        return 1;
     }
-    else {
-      obstruction_position = {};
-    }
-  }
 
-  std::cout << "Solution: " << count_loops << std::endl;
-  return 0;
+    input_data.close();
+
+    int count_loops = 0;
+
+
+    //here we check if is possible to place an obstacle in front of guard
+    auto next_possible_guard_position = room->GetNextPossibleGuardPosition(room->GetGuard());
+
+    while (next_possible_guard_position.has_value()) {
+        std::cout << "Obstacle position: " << next_possible_guard_position.value().GetPosition().X() << " " << next_possible_guard_position.value().GetPosition().Y() <<'\n';
+        Room try_room = *room;
+        //place the obstacle and let the guard runs again it
+        if (!try_room.PlaceObstruction(next_possible_guard_position.value().GetPosition())) {
+            std::cerr << "cannot place obstruction" << std::endl;
+            return 1;
+        }
+        //now we let guard continue his patrol. If he goes out of bounds then we have no loop but
+        //if he comes back to guard_position then we have a loop
+        if (try_room.IsGuardInLoop()) {
+            ++count_loops;
+            std::cout << "Found a loop. Current count: " << count_loops << std::endl;
+        }
+        room->PlaceGuard(next_possible_guard_position.value());
+        next_possible_guard_position = room->GetNextPossibleGuardPosition(next_possible_guard_position.value());
+    }
+
+    std::cout << "Solution: " << count_loops << std::endl;
+    return 0;
 }
