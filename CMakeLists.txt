@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 project(advent_of_code)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 add_library(global_lib INTERFACE)
 target_include_directories(global_lib INTERFACE global_inc)
 

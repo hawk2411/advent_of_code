@@ -1,3 +1,4 @@
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -41,14 +42,15 @@ int main() {
       room->GetNextPossibleGuardPosition(room->GetGuard());
 
   while (next_possible_guard_position.has_value()) {
-    std::cout << "Obstacle position: "
-              << next_possible_guard_position.value().GetPosition().X() << " "
-              << next_possible_guard_position.value().GetPosition().Y() << '\n';
+    std::cout << std::format(
+        "Obstacle position: {0} {1}\n",
+        next_possible_guard_position.value().GetPosition().X(),
+        next_possible_guard_position.value().GetPosition().Y());
     Room try_room = *room;
     // place the obstacle and let the guard runs again it
     if (!try_room.PlaceObstruction(
             next_possible_guard_position.value().GetPosition())) {
-      std::cerr << "cannot place obstruction" << std::endl;
+      std::cerr << "cannot place obstruction\n";
       return 1;
     }
     // now we let guard continue his patrol. If he goes out of bounds then we
@@ -57,14 +59,13 @@ int main() {
       auto insert_result =
           obstructions.insert(next_possible_guard_position->GetPosition());
       if (!insert_result.second) {
-        std::cout << "cannot insert obstruction: X: "
-                  << next_possible_guard_position->GetPosition().X()
-                  << " Y: " << next_possible_guard_position->GetPosition().Y()
-                  << "\n";
+        std::cout << std::format(
+            "cannot insert obstruction: X: {0} {1}\n",
+            next_possible_guard_position->GetPosition().X(),
+            next_possible_guard_position->GetPosition().Y());
       } else {
-
-        std::cout << "Found a loop. Current count: " << obstructions.size()
-                  << "\n";
+        std::cout << std::format("Found a loop. Current count: {0}\n",
+                                 obstructions.size());
       }
     }
     room->PlaceGuard(next_possible_guard_position.value());
@@ -72,6 +73,6 @@ int main() {
         next_possible_guard_position.value());
   }
 
-  std::cout << "Solution: " << obstructions.size() << std::endl;
+  std::cout << std::format("Solution: {0}\n", obstructions.size());
   return 0;
 }
