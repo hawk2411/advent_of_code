@@ -20,20 +20,19 @@ int main() {
   const std::string input_file = "./input_data.txt";
   std::ifstream input_data(input_file);
   if (!input_data.is_open()) {
-    std::cerr << "cannot find file " << input_file << std::endl;
+    std::cerr << std::format("Cannot find file: '{0}'.", input_file);
     return 1;
   }
-  long sum = 0;
 
   std::string text_line;
 
   auto room = Room::Create(input_data);
+  input_data.close();
+
   if (room == nullptr) {
-    std::cerr << "cannot open file " << input_file << std::endl;
+    std::cerr << std::format("Cannot read data in file '{0}'.\n", input_file);
     return 1;
   }
-
-  input_data.close();
 
   std::set<Position> obstructions;
 
