@@ -41,12 +41,13 @@ int main() {
   auto next_possible_guard_position =
       room->GetNextPossibleGuardPosition(room->GetGuard());
 
+  Room copy = *room;
   while (next_possible_guard_position.has_value()) {
     std::cout << std::format(
         "Obstacle position: {0} {1}\n",
         next_possible_guard_position.value().GetPosition().X(),
         next_possible_guard_position.value().GetPosition().Y());
-    Room try_room = *room;
+    Room try_room = copy;
     // place the obstacle and let the guard runs again it
     if (!try_room.PlaceObstruction(
             next_possible_guard_position.value().GetPosition())) {

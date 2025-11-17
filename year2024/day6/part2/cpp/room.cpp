@@ -2,6 +2,8 @@
 // Created by adwaha9 on 03.11.2025.
 //
 #include "room.h"
+
+#include <format>
 #include <fstream>
 #include <iostream>
 
@@ -68,10 +70,16 @@ bool Room::IsGuardInLoop() {
     std::set<Guard> guard_positions;
 
     guard_positions.insert(_guard); //start position
+    auto save_guard = _guard;
+
     auto next_position = MoveGuard();
     while (next_position.has_value()) {
+
         auto insert_result = guard_positions.insert(next_position.value());
         if (!insert_result.second ){
+            std::cout << std::format("Found loop after {0} steps. ", guard_positions.size());
+            std::cout << std::format("Guard found own foot print at {0} {1} {2} {3}\n", insert_result.first->GetPositionX(), insert_result.first->GetPositionY(), insert_result.first->GetDirectionX(), insert_result.first->GetDirectionY());
+
             return true;
         }
         next_position = MoveGuard();
