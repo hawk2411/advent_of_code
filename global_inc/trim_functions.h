@@ -49,8 +49,8 @@ inline std::string rtrim(std::string s) {
 
 inline std::string trim(std::string s) { return rtrim(ltrim(s)); }
 
-std::vector<std::string> split(const std::string &input,
-                               const std::string &delimiter) {
+inline std::vector<std::string> split(const std::string &input,
+                                      const std::string &delimiter) {
   std::vector<std::string> tokens;
   auto temp = input;
   size_t pos = 0;
