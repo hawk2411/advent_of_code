@@ -5,19 +5,53 @@
 #include <vector>
 
 struct dataRow_t {
-  unsigned long sum {0};
+  unsigned long sum{0};
   std::vector<unsigned long> numbers;
 };
 
 std::vector<dataRow_t> test_data;
 
-int bits_needed(unsigned int n) { return std::bit_width(n == 0 ? 1u : n); }
+const std::string operators{"+*|"};
 
 unsigned long do_func(unsigned long left, unsigned long right, char operand) {
-  if (operand == '0') {
-    return left + right;
+
+  unsigned long result{0};
+  switch (operand) {
+  case '+':
+    result = left + right;
+    break;
+  case '*':
+    result = left * right;
+    break;
+  default: {
+    result = std::stol(std::to_string(left) + std::to_string(right));
+  } break;
   }
-  return left * right;
+  return result;
+}
+
+void gen(const std::string &functions, const dataRow_t &data, unsigned long &sum, bool& found) {
+  if(found ) {
+    return;
+  }
+  if (functions.size() == data.numbers.size() - 1) {
+    auto left = data.numbers.at(0);
+    for (int i = 1; i < data.numbers.size(); ++i) {
+      left = do_func(left, data.numbers[i], functions[i - 1]);
+    }
+    if (left == data.sum) {
+      found = true;
+      sum += left;
+    }
+    return;
+  }
+  for (const auto ch : operators) {
+    if( found ) {
+      break;
+    }
+    gen(functions + ch, data, sum, found);
+
+  }
 }
 
 int main() {
@@ -47,14 +81,18 @@ int main() {
     auto result = string_functions::split(text_line.substr(pos + 1), " ");
     dataRow_t data;
     data.sum = std::stol(sumstr);
-    for (const auto &numberstr : result) {
-      data.numbers.push_back(std::stol(numberstr));
+    for (const auto &number_string : result) {
+      data.numbers.push_back(std::stol(number_string));
     }
 
     test_data.push_back(data);
   }
 
   input_data.close();
+  for (const auto &data : test_data) {
+    bool found = false;
+    gen("", data, sum, found);
+  }
 
   std::cout << "Solution: " << sum << std::endl;
   return 0;
